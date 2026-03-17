@@ -5,12 +5,6 @@ import gsap from "gsap";
 const Cursor = () => {
   const cursorRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
-    if (isTouchDevice) {
-      cursorRef.current?.style.setProperty("display", "none");
-      return;
-    }
-
     let hover = false;
     const cursor = cursorRef.current!;
     const mousePos = { x: 0, y: 0 };
@@ -24,7 +18,8 @@ const Cursor = () => {
         const delay = 6;
         cursorPos.x += (mousePos.x - cursorPos.x) / delay;
         cursorPos.y += (mousePos.y - cursorPos.y) / delay;
-        cursor.style.transform = `translate(${cursorPos.x}px, ${cursorPos.y}px)`;
+        gsap.to(cursor, { x: cursorPos.x, y: cursorPos.y, duration: 0.1 });
+        // cursor.style.transform = `translate(${cursorPos.x}px, ${cursorPos.y}px)`;
       }
       requestAnimationFrame(loop);
     });

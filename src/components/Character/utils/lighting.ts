@@ -23,7 +23,7 @@ const setLighting = (scene: THREE.Scene) => {
     .load("char_enviorment.hdr?v=2", function (texture) {
       texture.mapping = THREE.EquirectangularReflectionMapping;
       scene.environment = texture;
-      scene.environmentIntensity = 0;
+      scene.environmentIntensity = 0.2; // Increase base intensity to avoid black silhouette
       scene.environmentRotation.set(5.76, 85.85, 1);
     });
 

@@ -3,37 +3,28 @@ import gsap from "gsap";
 import { smoother } from "../Navbar";
 
 export async function initialFX() {
-  // Wait for fonts to be ready to avoid SplitText issues, with a 3s timeout
+  // Ensure fonts are loaded before SplitText to prevent measurement errors
   if (document.fonts) {
-    console.log("initialFX: checking font status...");
     try {
       await Promise.race([
-        document.fonts.ready,
+        document.fonts.load("1em Geist"),
         new Promise((_, reject) => setTimeout(() => reject(new Error("Font timeout")), 3000)),
       ]);
-      console.log("initialFX: fonts ready");
+      console.log("initialFX: fonts verified");
     } catch (e) {
-      console.warn("initialFX: fonts failed to load or timed out", e);
+      console.warn("initialFX: font load issue", e);
     }
   }
 
   document.body.style.overflowY = "auto";
-  if (smoother) {
-    smoother.paused(false);
-  }
-
-  const mainElement = document.getElementsByTagName("main")[0];
-  if (mainElement) {
-    gsap.fromTo(mainElement, { opacity: 0 }, { opacity: 1, duration: 1, ease: "power2.inOut" });
-  }
-
+  smoother.paused(false);
+  document.getElementsByTagName("main")[0].classList.add("main-active");
   gsap.to("body", {
     backgroundColor: "#0a0e17",
     duration: 0.5,
     delay: 1,
   });
 
-  var isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
   var landingText = new SplitText(
     [".landing-info h3", ".landing-intro h2", ".landing-intro h1"],
     {
@@ -43,11 +34,11 @@ export async function initialFX() {
   );
   gsap.fromTo(
     landingText.chars,
-    { opacity: 0, y: 80, ...(isTouchDevice ? {} : { filter: "blur(5px)" }) },
+    { opacity: 0, y: 80, filter: "blur(5px)" },
     {
       opacity: 1,
       duration: 1.2,
-      ...(isTouchDevice ? {} : { filter: "blur(0px)" }),
+      filter: "blur(0px)",
       ease: "power3.inOut",
       y: 0,
       stagger: 0.025,
@@ -60,11 +51,11 @@ export async function initialFX() {
   var landingText2 = new SplitText(".landing-h2-info", TextProps);
   gsap.fromTo(
     landingText2.chars,
-    { opacity: 0, y: 80, ...(isTouchDevice ? {} : { filter: "blur(5px)" }) },
+    { opacity: 0, y: 80, filter: "blur(5px)" },
     {
       opacity: 1,
       duration: 1.2,
-      ...(isTouchDevice ? {} : { filter: "blur(0px)" }),
+      filter: "blur(0px)",
       ease: "power3.inOut",
       y: 0,
       stagger: 0.025,
@@ -103,56 +94,49 @@ export async function initialFX() {
 }
 
 function LoopText(Text1: SplitText, Text2: SplitText) {
-  var tl = gsap.timeline({ repeat: -1, repeatDelay: 1 });
-  const delay = 4;
-  const delay2 = delay * 2 + 1;
+  var tl = gsap.timeline({ repeat: -1 });
+  const duration = 0.8;
+  const pause = 2.5;
 
-  tl.fromTo(
-    Text2.chars,
+  // Ensure initial state: Text2 is hidden
+  gsap.set(Text2.chars, { opacity: 0, y: 80 });
+
+  tl.to(Text1.chars, {
+    y: -80,
+    opacity: 0,
+    duration: duration,
+    ease: "power3.inOut",
+    stagger: 0.05,
+    delay: pause
+  })
+  .fromTo(Text2.chars, 
     { opacity: 0, y: 80 },
     {
       opacity: 1,
-      duration: 1.2,
-      ease: "power3.inOut",
       y: 0,
-      stagger: 0.1,
-      delay: delay,
+      duration: duration,
+      ease: "power3.inOut",
+      stagger: 0.05
     },
-    0
+    "<0.2" // Slight overlap for smoothness
   )
-    .fromTo(
-      Text1.chars,
-      { y: 80 },
-      {
-        duration: 1.2,
-        ease: "power3.inOut",
-        y: 0,
-        stagger: 0.1,
-        delay: delay2,
-      },
-      1
-    )
-    .fromTo(
-      Text1.chars,
-      { y: 0 },
-      {
-        y: -80,
-        duration: 1.2,
-        ease: "power3.inOut",
-        stagger: 0.1,
-        delay: delay,
-      },
-      0
-    )
-    .to(
-      Text2.chars,
-      {
-        y: -80,
-        duration: 1.2,
-        ease: "power3.inOut",
-        stagger: 0.1,
-        delay: delay2,
-      },
-      1
-    );
+  .to(Text2.chars, {
+    y: -80,
+    opacity: 0,
+    duration: duration,
+    ease: "power3.inOut",
+    stagger: 0.05,
+    delay: pause
+  })
+  .fromTo(Text1.chars, 
+    { opacity: 0, y: 80 },
+    {
+      opacity: 1,
+      y: 0,
+      duration: duration,
+      ease: "power3.inOut",
+      stagger: 0.05
+    },
+    "<0.2"
+  );
 }

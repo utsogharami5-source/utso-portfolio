@@ -47,16 +47,17 @@ a:hover {
 }
 
 main {
-  opacity: 0;
+  opacity: 1;
+  transition: 0.3s;
 }
 
 .main-active {
+  opacity: 0;
+  animation: fadeIn 1s 1;
+  animation-fill-mode: forwards;
 }
 
 @keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
   100% {
     opacity: 1;
   }
@@ -82,9 +83,6 @@ body {
   width: 100%;
   margin: auto;
   position: relative;
-}
-
-#smooth-content {
 }
 
 .container1 {
