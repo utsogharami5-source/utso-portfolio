@@ -6,11 +6,12 @@ const About = () => {
       <div className="about-me">
         <h3 className="title">About Me</h3>
         <p className="para">
-          Full Stack Developer with 4+ years of experience building scalable web
-          applications using React.js, Angular, Next.js, Node.js, and NestJS. Skilled
-          in microservices architecture, CMS development, and low-code platforms.
-          Passionate about creating high-performance, production-ready solutions
-          from concept to deployment.
+          A dedicated developer and 3rd-year BBA Honours (Management) student at
+          Government Haji Mohammad Mohsin College, Khulna. I specialize in bridging
+          the gap between creative problem-solving and technical execution — building
+          dynamic websites, compiling Android applications (APKs), and streamlining
+          workflows with n8n automation. I love bringing ideas to life through code
+          and am always eager to learn new technologies that make a real impact.
         </p>
       </div>
     </div>

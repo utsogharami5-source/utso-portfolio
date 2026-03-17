@@ -5,34 +5,25 @@ import { MdArrowBack, MdArrowForward } from "react-icons/md";
 
 const projects = [
   {
-    title: "Solid Starters",
-    category: "Low-Code Platform",
-    tools: "Angular, Next.js, NestJS, MongoDB",
-    image: "/images/Solidx.png",
+    title: "SmartBudge",
+    category: "Android Application",
+    tools: "Android APK, Mobile Dev, GitHub",
+    image: "/images/smartbudge.png",
+    link: "",
   },
   {
-    title: "Radix",
-    category: "E-Commerce",
-    tools: "Angular, Next.js, NestJS, CMS",
-    image: "/images/radix.png",
+    title: "Neon Plinko Game",
+    category: "Web Game",
+    tools: "HTML, CSS, JavaScript, Physics Engine",
+    image: "/images/neon-plinko.png",
+    link: "https://neon-pilnko.vercel.app/",
   },
   {
-    title: "Bond Cancellation",
-    category: "Import-Export Automation",
-    tools: "Angular, Next.js, NestJS, Workflows",
-    image: "/images/bond.png",
-  },
-  {
-    title: "Sapphire",
-    category: "CRM Platform",
-    tools: "AngularJS, NestJS, PostgreSQL",
-    image: "/images/sapphire.png",
-  },
-  {
-    title: "Mpro",
-    category: "Insurance Platform",
-    tools: "React.js, Node.js, Microservices",
-    image: "/images/Maxlife.png",
+    title: "Automated Workflow",
+    category: "n8n Automation",
+    tools: "n8n, API Integration, Workflow Automation",
+    image: "/images/auto-n8n.png",
+    link: "",
   },
 ];
 
@@ -104,7 +95,15 @@ const Work = () => {
                         <h3>0{index + 1}</h3>
                       </div>
                       <div className="carousel-details">
-                        <h4>{project.title}</h4>
+                        <h4>
+                          {project.link ? (
+                            <a href={project.link} target="_blank" rel="noopener noreferrer" data-cursor="disable" style={{color:"inherit", textDecoration:"underline"}}>
+                              {project.title} ↗
+                            </a>
+                          ) : (
+                            project.title
+                          )}
+                        </h4>
                         <p className="carousel-category">
                           {project.category}
                         </p>

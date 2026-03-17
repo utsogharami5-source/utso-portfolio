@@ -90,6 +90,18 @@ div.resume-button span {
     font-size: 28px;
   }
 }
+@media only screen and (max-width: 767px) {
+  .resume-button {
+    transform: none;
+    right: 0;
+    bottom: 20px;
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+  div.resume-button span {
+    font-size: 14px;
+  }
+}
 @media only screen and (min-width: 768px) {
   .resume-button {
     transform: none;
