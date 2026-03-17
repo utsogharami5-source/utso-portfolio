@@ -25,6 +25,8 @@ const Scene = () => {
     let observer: ResizeObserver | null = null;
     let characterObj: THREE.Object3D | null = null;
     let debounceTimeout: number | undefined;
+    let isActive = true; // Flag to prevent async race conditions
+
     let mouse = { x: 0, y: 0 },
       interpolation = { x: 0.1, y: 0.2 };
 
@@ -50,7 +52,7 @@ const Scene = () => {
     };
 
     const initScene = () => {
-      if (!canvasDiv.current || renderer) return;
+      if (!canvasDiv.current || renderer || !isActive) return;
       let rect = canvasDiv.current.getBoundingClientRect();
       let container = { width: rect.width, height: rect.height };
       const aspect = container.width / container.height;
@@ -84,26 +86,39 @@ const Scene = () => {
       const { loadCharacter } = setCharacter(renderer, scene, camera);
 
       loadCharacter().then((gltf) => {
+        if (!isActive) return; // Stop if unmounted
+
         if (gltf && canvasDiv.current) {
           const animations = setAnimations(gltf);
           hoverDivRef.current && animations.hover(gltf, hoverDivRef.current);
           mixer = animations.mixer;
           characterObj = gltf.scene;
+          
+          // Safety: Clear scene before adding to prevent duplicates
+          scene.children.forEach(child => {
+            if (child.type === "Group" || child.name.includes("character")) {
+              scene.remove(child);
+            }
+          });
+
           setChar(characterObj);
           scene.add(characterObj);
           headBone = characterObj.getObjectByName("spine006") || null;
           screenLight = characterObj.getObjectByName("screenlight") || null;
           progress.loaded().then(() => {
+            if (!isActive) return;
             setTimeout(() => {
+              if (!isActive) return;
               light.turnOnLights();
               animations.startIntro();
             }, 2500);
           });
-          window.addEventListener("resize", () => {
+          const resizeHandler = () => {
             if (renderer && characterObj) {
               handleResize(renderer, camera, canvasDiv, characterObj);
             }
-          });
+          };
+          window.addEventListener("resize", resizeHandler);
         }
       });
 
@@ -115,7 +130,7 @@ const Scene = () => {
       }
 
       const animate = () => {
-        if (!renderer) return;
+        if (!renderer || !isActive) return;
         requestAnimationFrame(animate);
         if (headBone) {
           handleHeadRotation(
@@ -141,7 +156,7 @@ const Scene = () => {
       let rect = canvasDiv.current.getBoundingClientRect();
       if (rect.width === 0 || rect.height === 0) {
         observer = new ResizeObserver(() => {
-          if (canvasDiv.current) {
+          if (canvasDiv.current && isActive) {
             let newRect = canvasDiv.current.getBoundingClientRect();
             if (newRect.width > 0 && newRect.height > 0) {
               observer?.disconnect();
@@ -156,9 +171,13 @@ const Scene = () => {
     }
 
     return () => {
+      isActive = false; // Kill all async callbacks
       if (observer) observer.disconnect();
       if (debounceTimeout) clearTimeout(debounceTimeout);
-      sceneRef.current.clear();
+      
+      const scene = sceneRef.current;
+      scene.clear();
+      
       if (renderer) {
         renderer.dispose();
         if (canvasDiv.current && renderer.domElement.parentElement) {
