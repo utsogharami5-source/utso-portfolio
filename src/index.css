@@ -83,6 +83,11 @@ body {
   width: 100%;
   margin: auto;
   position: relative;
+  will-change: transform;
+}
+
+#smooth-content {
+  will-change: transform;
 }
 
 .container1 {

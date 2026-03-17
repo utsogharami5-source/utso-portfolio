@@ -12,6 +12,7 @@ export function initialFX() {
     delay: 1,
   });
 
+  var isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
   var landingText = new SplitText(
     [".landing-info h3", ".landing-intro h2", ".landing-intro h1"],
     {
@@ -21,11 +22,11 @@ export function initialFX() {
   );
   gsap.fromTo(
     landingText.chars,
-    { opacity: 0, y: 80, filter: "blur(5px)" },
+    { opacity: 0, y: 80, ...(isTouchDevice ? {} : { filter: "blur(5px)" }) },
     {
       opacity: 1,
       duration: 1.2,
-      filter: "blur(0px)",
+      ...(isTouchDevice ? {} : { filter: "blur(0px)" }),
       ease: "power3.inOut",
       y: 0,
       stagger: 0.025,
@@ -38,11 +39,11 @@ export function initialFX() {
   var landingText2 = new SplitText(".landing-h2-info", TextProps);
   gsap.fromTo(
     landingText2.chars,
-    { opacity: 0, y: 80, filter: "blur(5px)" },
+    { opacity: 0, y: 80, ...(isTouchDevice ? {} : { filter: "blur(5px)" }) },
     {
       opacity: 1,
       duration: 1.2,
-      filter: "blur(0px)",
+      ...(isTouchDevice ? {} : { filter: "blur(0px)" }),
       ease: "power3.inOut",
       y: 0,
       stagger: 0.025,

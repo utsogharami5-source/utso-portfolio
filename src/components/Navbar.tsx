@@ -10,12 +10,13 @@ export let smoother: ScrollSmoother;
 
 const Navbar = () => {
   useEffect(() => {
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
     smoother = ScrollSmoother.create({
       wrapper: "#smooth-wrapper",
       content: "#smooth-content",
-      smooth: 1.7,
-      speed: 1.7,
-      effects: true,
+      smooth: isTouchDevice ? 1 : 1.7,
+      speed: isTouchDevice ? 1 : 1.7,
+      effects: !isTouchDevice,
       autoResize: true,
       ignoreMobileResize: true,
     });
