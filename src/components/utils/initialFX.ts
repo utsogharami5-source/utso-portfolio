@@ -2,10 +2,22 @@ import { SplitText } from "gsap/SplitText";
 import gsap from "gsap";
 import { smoother } from "../Navbar";
 
-export function initialFX() {
+export async function initialFX() {
+  // Wait for fonts to be ready to avoid SplitText issues
+  if (document.fonts) {
+    await document.fonts.ready;
+  }
+
   document.body.style.overflowY = "auto";
-  smoother.paused(false);
-  document.getElementsByTagName("main")[0].classList.add("main-active");
+  if (smoother) {
+    smoother.paused(false);
+  }
+
+  const mainElement = document.getElementsByTagName("main")[0];
+  if (mainElement) {
+    gsap.fromTo(mainElement, { opacity: 0 }, { opacity: 1, duration: 1, ease: "power2.inOut" });
+  }
+
   gsap.to("body", {
     backgroundColor: "#0a0e17",
     duration: 0.5,
