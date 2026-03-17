@@ -20,18 +20,40 @@ const Loading = ({ percent }: { percent: number }) => {
   }
 
   useEffect(() => {
-    import("./utils/initialFX").then((module) => {
-      if (isLoaded) {
-        setClicked(true);
-        setTimeout(async () => {
-          if (module.initialFX) {
-            await module.initialFX();
-          }
-          setIsLoading(false);
-        }, 900);
+    let safetyTimeout: number | undefined;
+
+    const startTransition = async () => {
+      try {
+        console.log("Loading: starting transition sequence...");
+        const module = await import("./utils/initialFX");
+        if (module.initialFX) {
+          await module.initialFX();
+        }
+      } catch (error) {
+        console.error("Loading: transition sequence failed", error);
+      } finally {
+        console.log("Loading: dismissing loading screen");
+        setIsLoading(false);
+        if (safetyTimeout) clearTimeout(safetyTimeout);
       }
-    });
-  }, [isLoaded]);
+    };
+
+    if (isLoaded) {
+      setClicked(true);
+      // Fallback safety timeout: 15 seconds after "Welcome" click/load
+      safetyTimeout = setTimeout(() => {
+        console.warn("Loading: safety timeout triggered, forcing visibility");
+        setIsLoading(false);
+      }, 15000) as unknown as number;
+
+      // Start animations after a short delay for the "Welcome" intro
+      setTimeout(startTransition, 900);
+    }
+
+    return () => {
+      if (safetyTimeout) clearTimeout(safetyTimeout);
+    };
+  }, [isLoaded, setIsLoading]);
 
   function handleMouseMove(e: React.MouseEvent<HTMLElement>) {
     const { currentTarget: target } = e;

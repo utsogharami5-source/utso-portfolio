@@ -3,9 +3,18 @@ import gsap from "gsap";
 import { smoother } from "../Navbar";
 
 export async function initialFX() {
-  // Wait for fonts to be ready to avoid SplitText issues
+  // Wait for fonts to be ready to avoid SplitText issues, with a 3s timeout
   if (document.fonts) {
-    await document.fonts.ready;
+    console.log("initialFX: checking font status...");
+    try {
+      await Promise.race([
+        document.fonts.ready,
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Font timeout")), 3000)),
+      ]);
+      console.log("initialFX: fonts ready");
+    } catch (e) {
+      console.warn("initialFX: fonts failed to load or timed out", e);
+    }
   }
 
   document.body.style.overflowY = "auto";
